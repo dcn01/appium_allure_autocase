@@ -1,0 +1,7 @@
+{
+  "Runner.py::testReport": true, 
+  "Runner.py::test_run": true, 
+  "UIAutoAndroid_bak_14.py": true, 
+  "UIAutoAndroid_bak_14.py::test_save": true, 
+  "test2.py::test_answer": true
+}

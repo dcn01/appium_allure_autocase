@@ -3,18 +3,22 @@
 
 import time
 
+import allure
+import pytest
 from appium import webdriver
-
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
+from log import Log as L
+from utils.shell import Shell
+
 #设备信息
 desired_caps ={}
 desired_caps['platformName'] = 'Android'
 desired_caps['platforVersion'] = '6.0.1'
-desired_caps['deviceName'] = 'Nexus 5'
+desired_caps['deviceName'] = 'huawei'
 desired_caps['appPackage'] = 'com.ss.android.ugc.live'
 desired_caps['appActivity'] = 'com.ss.android.ugc.live.splash.LiveSplashActivity'
 desired_caps['newCommandTimeout'] = 20000
@@ -124,7 +128,8 @@ def check_home_page(driver):
     else:
         print "login testing fail."
 
-
+@allure.step('some operation')
+@allure.issue('http://jira.lan/browse/ISSUE-1')
 def new_user_view_video():
     '''
     未登录状态下滑动刷新，进入视频详情页看视频
@@ -149,8 +154,9 @@ def new_user_view_video():
     except Exception as e:
         print e
 
-
-def new_user_view_live():
+@allure.step(title="获取账号和密码")
+@allure.issue('http://jira.lan/browse/ISSUE-1')
+def test_new_user_view_live():
     '''
     未登录状态下滑动刷新，进入直播详情页看直播
     :return:
@@ -220,12 +226,31 @@ def login():
 def main():
 
     # new_user_view_video()
-    # login()
-    new_user_view_live()
+    #  login()
+    test_new_user_view_live()
     # getSide()
     # swipeUp(500, 3)
 
 
 if __name__ == '__main__':
-    main()
+     xml_report_path = "./allure-results"
+     html_report_path = "./allure-results/html"
+     # 开始测试
+     args = ["test.py", '-s', '-q', '--alluredir', xml_report_path]
+     pytest.main(args)
+     args = ["test.py", '-s', '-q', '--alluredir', xml_report_path]
+     pytest.main(args)
+     # 生成html测试报告
+     cmd1 = 'allure generate %s -o %s' % (xml_report_path, html_report_path)
+     cmd2 = 'allure open ' + html_report_path
+     try:
+         Shell.invoke(cmd1)
+         Shell.invoke(cmd2)
+     except:
+         L.e("Html测试报告生成失败,确保已经安装了Allure-Commandline")
+     # try :
+     #     Shell.invoke("allure serve --profile  ./")
+     # except:
+     #     L.e("Html测试报告生成失败,确保已经安装了Allure-Commandline")
+     #
 
